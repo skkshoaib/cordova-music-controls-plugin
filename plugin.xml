@@ -29,6 +29,8 @@
 
 		<config-file target="AndroidManifest.xml" parent="/*">
 			<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+			<uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/> 
+			<uses-permission android:name="android.permission.BLUETOOTH"/>
 		</config-file>
 
 		<config-file target="AndroidManifest.xml" parent="/manifest/application">

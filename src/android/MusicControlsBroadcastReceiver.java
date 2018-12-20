@@ -1,13 +1,10 @@
 package com.homerours.musiccontrols;
 
 import org.apache.cordova.CallbackContext;
-import org.apache.cordova.CordovaPlugin;
 
-import android.util.Log;
-import android.app.Activity;
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.content.BroadcastReceiver;
 import android.view.KeyEvent;
 
@@ -54,7 +51,16 @@ public class MusicControlsBroadcastReceiver extends BroadcastReceiver {
 					default:
 						break;
 				}
-			} else if (message.equals("music-controls-media-button")){
+			}
+            else if(message.equals(BluetoothDevice.ACTION_ACL_CONNECTED)){
+                this.cb.success("{\"message\": \"music-controls-bluetooth-device-connected\"}");
+                this.cb = null;
+            }
+			else if(message.equals(BluetoothDevice.ACTION_ACL_DISCONNECTED)){
+                this.cb.success("{\"message\": \"music-controls-bluetooth-device-disconnected\"}");
+                this.cb = null;
+            }
+			else if (message.equals("music-controls-media-button")){
 				// Media button
 				KeyEvent event = (KeyEvent) intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
 				if (event.getAction() == KeyEvent.ACTION_DOWN) {
