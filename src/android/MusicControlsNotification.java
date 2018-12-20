@@ -1,7 +1,5 @@
 package com.homerours.musiccontrols;
 
-import org.apache.cordova.CordovaInterface;
-
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -9,17 +7,14 @@ import java.io.InputStream;
 import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Random;
 
-import android.util.Log;
-import android.R;
+import android.app.NotificationChannel;
 import android.content.Context;
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.Build;
 import android.graphics.BitmapFactory;
 import android.graphics.Bitmap;
@@ -32,6 +27,7 @@ public class MusicControlsNotification {
 	private int notificationID;
 	private MusicControlsInfos infos;
 	private Bitmap bitmapCover;
+	private static final String CHANNEL_ID="memorize_quran_important_notifications";
 
 	// Public Constructor
 	public MusicControlsNotification(Activity cordovaActivity,int id){
@@ -39,6 +35,7 @@ public class MusicControlsNotification {
 		this.cordovaActivity = cordovaActivity;
 		Context context = cordovaActivity;
 		this.notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+		this.createNotificationChannel(context);
 	}
 
 	// Show or update notification
@@ -230,9 +227,33 @@ public class MusicControlsNotification {
 			}
 			builder.setStyle(new Notification.MediaStyle().setShowActionsInCompactView(args));
 		}
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            builder.setChannelId(this.createNotificationChannel(context));
+        }
 		this.notificationBuilder = builder;
 	}
+    private String createNotificationChannel(Context context) {
 
+        // NotificationChannels are required for Notifications on O (API 26) and above.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            // Initializes NotificationChannel.
+            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID,
+                    "Playback notifications",  NotificationManager.IMPORTANCE_LOW);
+            notificationChannel.setDescription("Notifications during playback ");
+            notificationChannel.enableVibration(false);
+            notificationChannel.setLockscreenVisibility(1);
+
+            // Adds NotificationChannel to system. Attempting to create an existing notification
+            // channel with its original values performs no operation, so it's safe to perform the
+            // below sequence.
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            assert notificationManager != null;
+            notificationManager.createNotificationChannel(notificationChannel);
+            return CHANNEL_ID;
+        }
+        return null;
+    }
 	private int getResourceId(String name, int fallback){
 		try{
 			if(name.isEmpty()){
